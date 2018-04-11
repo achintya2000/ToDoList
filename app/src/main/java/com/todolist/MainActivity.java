@@ -4,7 +4,9 @@ import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
@@ -13,8 +15,10 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
-
+import android.os.Bundle;
+import android.app.Activity;
 
 import com.todolist.db.TaskContract;
 import com.todolist.db.TaskDbHelper;
@@ -22,10 +26,10 @@ import com.todolist.db.TaskDbHelper;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
-    private static final String TAG = "MainActivity";
     private TaskDbHelper mHelper;
     private ListView mTaskListView;
     private ArrayAdapter<String> mAdapter;
+    private ConstraintLayout constraintLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,9 +77,17 @@ public class MainActivity extends AppCompatActivity {
                 dialog.show();
                 return true;
 
+            case R.id.ColorChange:
+                constraintLayout = findViewById(R.id.myLayout);
+                constraintLayout.setBackgroundColor(Color.parseColor(changeColor()));
+
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    public String changeColor() {
+        return "#080808";
     }
 
     public void deleteTask(View view) {
