@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
-
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
     <item
         android:id="@+id/action_add_task"
         android:title="Add Task" />
 
     <item
         android:id="@+id/ColorChange"
-        android:title="Change Color"/>
+        android:title="Change Theme"/>
+
+    <item
+        android:id="@+id/FinishAll"
+        android:title="Finished All Tasks" />
 
 </menu>

@@ -4,9 +4,7 @@ import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
@@ -15,10 +13,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.os.Bundle;
-import android.app.Activity;
 
 import com.todolist.db.TaskContract;
 import com.todolist.db.TaskDbHelper;
@@ -29,10 +24,13 @@ public class MainActivity extends AppCompatActivity {
     private TaskDbHelper mHelper;
     private ListView mTaskListView;
     private ArrayAdapter<String> mAdapter;
-    private ConstraintLayout constraintLayout;
+
+    private static boolean toggle = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        toggleTheme();
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -52,42 +50,85 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_add_task:
-                final EditText taskEditText = new EditText(this);
-                AlertDialog dialog = new AlertDialog.Builder(this)
-                        .setTitle("Add a new task")
-                        .setMessage("What do you want to do next?")
-                        .setView(taskEditText)
-                        .setPositiveButton("Add", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                String task = String.valueOf(taskEditText.getText());
-                                SQLiteDatabase db = mHelper.getWritableDatabase();
-                                ContentValues values = new ContentValues();
-                                values.put(TaskContract.TaskEntry.COL_TASK_TITLE, task);
-                                db.insertWithOnConflict(TaskContract.TaskEntry.TABLE,
-                                        null,
-                                        values,
-                                        SQLiteDatabase.CONFLICT_REPLACE);
-                                db.close();
-                                updateUI();
-                            }
-                        })
-                        .setNegativeButton("Cancel", null)
-                        .create();
-                dialog.show();
+                toggleAlertDialog();
                 return true;
 
             case R.id.ColorChange:
-                constraintLayout = findViewById(R.id.myLayout);
-                constraintLayout.setBackgroundColor(Color.parseColor(changeColor()));
+                this.recreate();
+                return  true;
+
+            case R.id.FinishAll:
+                deleteAll();
+                return true;
 
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
 
-    public String changeColor() {
-        return "#080808";
+    public void toggleTheme() {
+
+        if(toggle) {
+            System.out.println("Setting theme to Dark");
+            setTheme(android.R.style.ThemeOverlay_Material_Dark);
+            toggle = false;
+        } else {
+            System.out.println("Setting theme to Light");
+            setTheme(android.R.style.ThemeOverlay_Material_Light);
+            toggle = true;
+        }
+    }
+
+    public void toggleAlertDialog() {
+        if (toggle == false) {
+            final EditText taskEditText = new EditText(this);
+            AlertDialog dialog = new AlertDialog.Builder(this, android.R.style.ThemeOverlay_Material_Dark)
+                    .setTitle("Add a new task")
+                    .setMessage("What do you want to do next?")
+                    .setView(taskEditText)
+                    .setPositiveButton("Add", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            String task = String.valueOf(taskEditText.getText());
+                            SQLiteDatabase db = mHelper.getWritableDatabase();
+                            ContentValues values = new ContentValues();
+                            values.put(TaskContract.TaskEntry.COL_TASK_TITLE, task);
+                            db.insertWithOnConflict(TaskContract.TaskEntry.TABLE,
+                                    null,
+                                    values,
+                                    SQLiteDatabase.CONFLICT_REPLACE);
+                            db.close();
+                            updateUI();
+                        }
+                    })
+                    .setNegativeButton("Cancel", null)
+                    .create();
+            dialog.show();
+        } else {
+            final EditText taskEditText = new EditText(this);
+            AlertDialog dialog = new AlertDialog.Builder(this, android.R.style.ThemeOverlay_Material_Light)
+                    .setTitle("Add a new task")
+                    .setMessage("What do you want to do next?")
+                    .setView(taskEditText)
+                    .setPositiveButton("Add", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            String task = String.valueOf(taskEditText.getText());
+                            SQLiteDatabase db = mHelper.getWritableDatabase();
+                            ContentValues values = new ContentValues();
+                            values.put(TaskContract.TaskEntry.COL_TASK_TITLE, task);
+                            db.insertWithOnConflict(TaskContract.TaskEntry.TABLE,
+                                    null,
+                                    values,
+                                    SQLiteDatabase.CONFLICT_REPLACE);
+                            db.close();
+                            updateUI();
+                        }
+                    })
+                    .setNegativeButton("Cancel", null)
+                    .create();
+            dialog.show();
+        }
     }
 
     public void deleteTask(View view) {
@@ -98,6 +139,13 @@ public class MainActivity extends AppCompatActivity {
         db.delete(TaskContract.TaskEntry.TABLE,
                 TaskContract.TaskEntry.COL_TASK_TITLE + " = ?",
                 new String[]{task});
+        db.close();
+        updateUI();
+    }
+
+    public void deleteAll() {
+        SQLiteDatabase db = mHelper.getWritableDatabase();
+        db.delete(TaskContract.TaskEntry.TABLE, null, null);
         db.close();
         updateUI();
     }
