@@ -173,5 +173,4 @@ public class MainActivity extends AppCompatActivity {
         db.close();
     }
 }
-
 //Referenced from https://www.sitepoint.com/starting-android-development-creating-todo-app/
