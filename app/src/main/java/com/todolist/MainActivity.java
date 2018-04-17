@@ -50,7 +50,55 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_add_task:
-                toggleAlertDialog();
+                if (!toggle) {
+                    final EditText taskEditText = new EditText(this);
+                    AlertDialog dialog = new AlertDialog.Builder(this, android.R.style.ThemeOverlay_Material_Dark)
+                            .setTitle("Add a new task")
+                            .setMessage("What do you want to do next?")
+                            .setView(taskEditText)
+                            .setPositiveButton("Add", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    String task = String.valueOf(taskEditText.getText());
+                                    SQLiteDatabase db = mHelper.getWritableDatabase();
+                                    ContentValues values = new ContentValues();
+                                    values.put(TaskContract.TaskEntry.COL_TASK_TITLE, task);
+                                    db.insertWithOnConflict(TaskContract.TaskEntry.TABLE,
+                                            null,
+                                            values,
+                                            SQLiteDatabase.CONFLICT_REPLACE);
+                                    db.close();
+                                    updateUI();
+                                }
+                            })
+                            .setNegativeButton("Cancel", null)
+                            .create();
+                    dialog.show();
+                } else {
+                    final EditText taskEditText = new EditText(this);
+                    AlertDialog dialog = new AlertDialog.Builder(this, android.R.style.ThemeOverlay_Material_Light)
+                            .setTitle("Add a new task")
+                            .setMessage("What do you want to do next?")
+                            .setView(taskEditText)
+                            .setPositiveButton("Add", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    String task = String.valueOf(taskEditText.getText());
+                                    SQLiteDatabase db = mHelper.getWritableDatabase();
+                                    ContentValues values = new ContentValues();
+                                    values.put(TaskContract.TaskEntry.COL_TASK_TITLE, task);
+                                    db.insertWithOnConflict(TaskContract.TaskEntry.TABLE,
+                                            null,
+                                            values,
+                                            SQLiteDatabase.CONFLICT_REPLACE);
+                                    db.close();
+                                    updateUI();
+                                }
+                            })
+                            .setNegativeButton("Cancel", null)
+                            .create();
+                    dialog.show();
+                }
                 return true;
 
             case R.id.ColorChange:
@@ -79,56 +127,11 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void toggleAlertDialog() {
-        if (toggle == false) {
-            final EditText taskEditText = new EditText(this);
-            AlertDialog dialog = new AlertDialog.Builder(this, android.R.style.ThemeOverlay_Material_Dark)
-                    .setTitle("Add a new task")
-                    .setMessage("What do you want to do next?")
-                    .setView(taskEditText)
-                    .setPositiveButton("Add", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            String task = String.valueOf(taskEditText.getText());
-                            SQLiteDatabase db = mHelper.getWritableDatabase();
-                            ContentValues values = new ContentValues();
-                            values.put(TaskContract.TaskEntry.COL_TASK_TITLE, task);
-                            db.insertWithOnConflict(TaskContract.TaskEntry.TABLE,
-                                    null,
-                                    values,
-                                    SQLiteDatabase.CONFLICT_REPLACE);
-                            db.close();
-                            updateUI();
-                        }
-                    })
-                    .setNegativeButton("Cancel", null)
-                    .create();
-            dialog.show();
-        } else {
-            final EditText taskEditText = new EditText(this);
-            AlertDialog dialog = new AlertDialog.Builder(this, android.R.style.ThemeOverlay_Material_Light)
-                    .setTitle("Add a new task")
-                    .setMessage("What do you want to do next?")
-                    .setView(taskEditText)
-                    .setPositiveButton("Add", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            String task = String.valueOf(taskEditText.getText());
-                            SQLiteDatabase db = mHelper.getWritableDatabase();
-                            ContentValues values = new ContentValues();
-                            values.put(TaskContract.TaskEntry.COL_TASK_TITLE, task);
-                            db.insertWithOnConflict(TaskContract.TaskEntry.TABLE,
-                                    null,
-                                    values,
-                                    SQLiteDatabase.CONFLICT_REPLACE);
-                            db.close();
-                            updateUI();
-                        }
-                    })
-                    .setNegativeButton("Cancel", null)
-                    .create();
-            dialog.show();
-        }
+    public void deleteAll() {
+        SQLiteDatabase db = mHelper.getWritableDatabase();
+        db.delete(TaskContract.TaskEntry.TABLE, null, null);
+        db.close();
+        updateUI();
     }
 
     public void deleteTask(View view) {
@@ -139,13 +142,6 @@ public class MainActivity extends AppCompatActivity {
         db.delete(TaskContract.TaskEntry.TABLE,
                 TaskContract.TaskEntry.COL_TASK_TITLE + " = ?",
                 new String[]{task});
-        db.close();
-        updateUI();
-    }
-
-    public void deleteAll() {
-        SQLiteDatabase db = mHelper.getWritableDatabase();
-        db.delete(TaskContract.TaskEntry.TABLE, null, null);
         db.close();
         updateUI();
     }
@@ -177,3 +173,5 @@ public class MainActivity extends AppCompatActivity {
         db.close();
     }
 }
+
+//Referenced from https://www.sitepoint.com/starting-android-development-creating-todo-app/

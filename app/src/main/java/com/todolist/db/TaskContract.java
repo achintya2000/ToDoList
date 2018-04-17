@@ -12,3 +12,5 @@ public class TaskContract {
         public static final String COL_TASK_TITLE = "title";
     }
 }
+
+//Referenced from https://www.sitepoint.com/starting-android-development-creating-todo-app/

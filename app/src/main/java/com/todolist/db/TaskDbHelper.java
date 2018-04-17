@@ -25,3 +25,5 @@ public class TaskDbHelper extends SQLiteOpenHelper{
         onCreate(db);
     }
 }
+
+//Referenced from https://www.sitepoint.com/starting-android-development-creating-todo-app/
